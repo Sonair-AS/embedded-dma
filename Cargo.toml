@@ -5,7 +5,7 @@ authors = [
     "Jan Teske <jteske@posteo.net>",
     "Thales Fragoso <thales.fragosoz@gmail.com>"
 ]
-edition = "2018"
+edition = "2021"
 categories = ["embedded", "no-std"]
 keywords = ["dma"]
 description = "Traits to aid in the creation of sound DMA abstractions"
