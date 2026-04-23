@@ -88,6 +88,8 @@ pub unsafe trait WriteBuffer {
 
 // Blanket implementations for common DMA buffer types.
 
+// SAFETY: B: StableDeref guarantees the deref target has a stable address,
+// and 'static ensures the buffer outlives any DMA transfer.
 unsafe impl<B, T> ReadBuffer for B
 where
     B: Deref<Target = T> + StableDeref + 'static,
@@ -100,6 +102,8 @@ where
     }
 }
 
+// SAFETY: B: StableDeref guarantees the deref target has a stable address,
+// DerefMut provides mutable access, and 'static ensures the buffer outlives any DMA transfer.
 unsafe impl<B, T> WriteBuffer for B
 where
     B: DerefMut<Target = T> + StableDeref + 'static,
@@ -121,6 +125,7 @@ where
 /// we won't get UB due to invalid values.
 pub unsafe trait Word {}
 
+// SAFETY: All primitive integer types are valid for any byte pattern.
 unsafe impl Word for u8 {}
 unsafe impl Word for i8 {}
 unsafe impl Word for u16 {}
@@ -168,30 +173,42 @@ pub unsafe trait WriteTarget {
     }
 }
 
+// SAFETY: A single Word value is a valid read target; the default as_read_buffer
+// returns a pointer to self with length 1.
 unsafe impl<W: Word> ReadTarget for W {
     type Word = W;
 }
 
+// SAFETY: A single Word value is a valid write target; the default as_write_buffer
+// returns a pointer to self with length 1.
 unsafe impl<W: Word> WriteTarget for W {
     type Word = W;
 }
 
+// SAFETY: A slice of ReadTarget elements is contiguous in memory;
+// the default as_read_buffer computes pointer and length from the slice layout.
 unsafe impl<T: ReadTarget> ReadTarget for [T] {
     type Word = T::Word;
 }
 
+// SAFETY: A slice of WriteTarget elements is contiguous in memory;
+// the default as_write_buffer computes pointer and length from the slice layout.
 unsafe impl<T: WriteTarget> WriteTarget for [T] {
     type Word = T::Word;
 }
 
+// SAFETY: An array of ReadTarget elements is contiguous in memory with known size.
 unsafe impl<T: ReadTarget, const N: usize> ReadTarget for [T; N] {
     type Word = T::Word;
 }
 
+// SAFETY: An array of WriteTarget elements is contiguous in memory with known size.
 unsafe impl<T: WriteTarget, const N: usize> WriteTarget for [T; N] {
     type Word = T::Word;
 }
 
+// SAFETY: MaybeUninit<T> has the same layout as T and is valid for any byte pattern,
+// making it safe for DMA writes even before initialization.
 unsafe impl<T: WriteTarget> WriteTarget for MaybeUninit<T> {
     type Word = T::Word;
 }
