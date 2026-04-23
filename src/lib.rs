@@ -8,12 +8,12 @@
 //! measure of redundancy, some are listed below:
 //!
 //! * The traits only guarantee a stable location while no `&mut self` methods are called upon
-//! `Self` (with the exception of [`write_buffer`](trait.WriteBuffer.html#tymethod.write_buffer) in
-//! our case). This is to allow types like `Vec`, this restriction doesn't apply to `Self::Target`.
+//!   `Self` (with the exception of [`write_buffer`](trait.WriteBuffer.html#tymethod.write_buffer) in
+//!   our case). This is to allow types like `Vec`, this restriction doesn't apply to `Self::Target`.
 //!
 //! * [`ReadBuffer`] and [`WriteBuffer`] guarantee a stable location for as long as the DMA transfer
-//! occurs. Given the intrinsics of `mem::forget` and the Rust language itself, a
-//! 'static lifetime is usually required.
+//!   occurs. Given the intrinsics of `mem::forget` and the Rust language itself, a
+//!   'static lifetime is usually required.
 //!
 //! The above list is not exhaustive, for a complete set of requirements and guarantees, the
 //! documentation of each trait and method should be analyzed.
